@@ -33,7 +33,8 @@
   },
   "devDependencies": {
     "chai": "~1.8.1",
-    "mocha": "~1.12.0"
+    "mocha": "~1.12.0",
+    "sinon": "~1.7.3"
   },
   "engines": {
     "node": ">=0.8.0",
