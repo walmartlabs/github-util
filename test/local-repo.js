@@ -47,4 +47,24 @@ describe('repo-state', function() {
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
   });
+
+  describe('#firstCommit', function() {
+    it('should lookup local repo', function(done) {
+      repoState.firstCommit(function(err, first) {
+        expect(first).to.equal('71f5fa4');
+        done();
+      });
+    });
+
+    it('should handle errors', function() {
+      this.stub(childProcess, 'exec', function(exec, callback) {
+        callback(new Error('It failed'));
+      });
+
+      var spy = this.spy();
+      repoState.firstCommit(spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+    });
+  });
 });
