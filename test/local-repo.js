@@ -67,4 +67,24 @@ describe('repo-state', function() {
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
   });
+
+  describe('#commitTime', function() {
+    it('should lookup local repo', function(done) {
+      repoState.commitTime('71f5fa4', function(err, time) {
+        expect(time).to.equal('2013-12-27T05:38:34Z');
+        done();
+      });
+    });
+
+    it('should handle errors', function() {
+      this.stub(childProcess, 'exec', function(exec, callback) {
+        callback(new Error('It failed'));
+      });
+
+      var spy = this.spy();
+      repoState.commitTime('asdf', spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+    });
+  });
 });
