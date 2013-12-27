@@ -87,4 +87,35 @@ describe('repo-state', function() {
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
   });
+
+  describe('#ensureClean', function() {
+    it('should lookup local repo', function(done) {
+      repoState.ensureClean(function(err, clean) {
+        expect(clean).to.be.true;
+        done();
+      });
+    });
+
+    it('should handle dirty', function() {
+      this.stub(childProcess, 'exec', function(exec, callback) {
+        callback(undefined, ' ');
+      });
+
+      var spy = this.spy();
+      repoState.ensureClean(spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(undefined, false)).to.be.true;
+    });
+
+    it('should handle errors', function() {
+      this.stub(childProcess, 'exec', function(exec, callback) {
+        callback(new Error('It failed'));
+      });
+
+      var spy = this.spy();
+      repoState.ensureClean(spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+    });
+  });
 });
