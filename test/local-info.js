@@ -1,7 +1,7 @@
 var chai = require('chai'),
       expect = chai.expect,
     childProcess = require('child_process'),
-    repoState = require('../lib/local-repo'),
+    localInfo = require('../lib/local-info'),
     sinon = require('sinon');
 
 describe('repo-state', function() {
@@ -17,7 +17,7 @@ describe('repo-state', function() {
 
   describe('#githubName', function() {
     it('should lookup local repo', function(done) {
-      repoState.githubName(function(err, origin) {
+      localInfo.githubName(function(err, origin) {
         expect(origin).to.equal('walmartlabs/github-util');
         done();
       });
@@ -31,7 +31,7 @@ describe('repo-state', function() {
           + 'upstream  git@github.com:walmartlabs/github-util.git (fetch)\n'
           + 'upstream  git@github.com:walmartlabs/github-util.git (push)\n');
       });
-      repoState.githubName(function(err, origin) {
+      localInfo.githubName(function(err, origin) {
         expect(origin).to.equal('kpdecker/github-util');
       });
     });
@@ -42,7 +42,7 @@ describe('repo-state', function() {
       });
 
       var spy = this.spy();
-      repoState.githubName(spy);
+      localInfo.githubName(spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
@@ -50,7 +50,7 @@ describe('repo-state', function() {
 
   describe('#firstCommit', function() {
     it('should lookup local repo', function(done) {
-      repoState.firstCommit(function(err, first) {
+      localInfo.firstCommit(function(err, first) {
         expect(first).to.equal('71f5fa4');
         done();
       });
@@ -62,7 +62,7 @@ describe('repo-state', function() {
       });
 
       var spy = this.spy();
-      repoState.firstCommit(spy);
+      localInfo.firstCommit(spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
@@ -70,7 +70,7 @@ describe('repo-state', function() {
 
   describe('#commitTime', function() {
     it('should lookup local repo', function(done) {
-      repoState.commitTime('71f5fa4', function(err, time) {
+      localInfo.commitTime('71f5fa4', function(err, time) {
         expect(time).to.equal('2013-12-27T05:38:34Z');
         done();
       });
@@ -82,7 +82,7 @@ describe('repo-state', function() {
       });
 
       var spy = this.spy();
-      repoState.commitTime('asdf', spy);
+      localInfo.commitTime('asdf', spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
@@ -90,7 +90,7 @@ describe('repo-state', function() {
 
   describe('#ensureClean', function() {
     it('should lookup local repo', function(done) {
-      repoState.ensureClean(function(err, clean) {
+      localInfo.ensureClean(function(err, clean) {
         expect(clean).to.be.true;
         done();
       });
@@ -102,7 +102,7 @@ describe('repo-state', function() {
       });
 
       var spy = this.spy();
-      repoState.ensureClean(spy);
+      localInfo.ensureClean(spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(undefined, false)).to.be.true;
     });
@@ -113,7 +113,7 @@ describe('repo-state', function() {
       });
 
       var spy = this.spy();
-      repoState.ensureClean(spy);
+      localInfo.ensureClean(spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
@@ -126,7 +126,7 @@ describe('repo-state', function() {
       });
 
       var spy = this.spy();
-      repoState.ensureFetched(spy);
+      localInfo.ensureFetched(spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(undefined, true)).to.be.true;
     });
@@ -137,7 +137,7 @@ describe('repo-state', function() {
       });
 
       var spy = this.spy();
-      repoState.ensureFetched(spy);
+      localInfo.ensureFetched(spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(undefined, false, {behind: '5'})).to.be.true;
     });
@@ -148,7 +148,7 @@ describe('repo-state', function() {
       });
 
       var spy = this.spy();
-      repoState.ensureFetched(spy);
+      localInfo.ensureFetched(spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
@@ -159,7 +159,7 @@ describe('repo-state', function() {
       });
 
       var spy = this.spy();
-      repoState.ensureFetched(spy);
+      localInfo.ensureFetched(spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
