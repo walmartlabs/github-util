@@ -1,5 +1,5 @@
 {
-  "name": "github-utils",
+  "name": "github-util",
   "version": "0.1.0",
   "description": "Github utilities",
   "keywords": [
@@ -7,8 +7,8 @@
     "git",
     "pull request"
   ],
-  "homepage": "https://github.com/walmartlabs/github-utils",
-  "bugs": "https://github.com/walmartlabs/github-utils/issues",
+  "homepage": "https://github.com/walmartlabs/github-util",
+  "bugs": "https://github.com/walmartlabs/github-util/issues",
   "author": {
     "name": "Kevin Decker",
     "email": "kpdecker@incaseofstairs.com",
@@ -17,7 +17,7 @@
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/walmartlabs/github-utils.git"
+    "url": "git://github.com/walmartlabs/github-util.git"
   },
   "scripts": {
     "test": "mocha"
