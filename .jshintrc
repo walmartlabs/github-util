@@ -34,7 +34,6 @@
     "before",
     "after",
     "beforeEach",
-    "afterEach",
-    "sinon"
+    "afterEach"
   ]
 }
