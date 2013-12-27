@@ -1,7 +1,7 @@
 var chai = require('chai'),
       expect = chai.expect,
     childProcess = require('child_process'),
-    repoState = require('../lib/repo-state'),
+    repoState = require('../lib/local-repo'),
     sinon = require('sinon');
 
 describe('repo-state', function() {
