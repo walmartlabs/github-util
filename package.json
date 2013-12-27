@@ -1,0 +1,46 @@
+{
+  "name": "github-utils",
+  "version": "0.1.0",
+  "description": "Github utilities",
+  "keywords": [
+    "github",
+    "git",
+    "pull request"
+  ],
+  "homepage": "https://github.com/walmartlabs/github-utils",
+  "bugs": "https://github.com/walmartlabs/github-utils/issues",
+  "author": {
+    "name": "Kevin Decker",
+    "email": "kpdecker@incaseofstairs.com",
+    "url": "https://github.com/kpdecker"
+  },
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/walmartlabs/github-utils.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "async": "~0.2.9",
+    "dateformat": "~1.0.6-1.2.3",
+    "github-api": "git://github.com/kpdecker/github.git",
+    "request": "~2.27.0",
+    "semver": "~2.1.0",
+    "temp": "~0.6.0",
+    "underscore": "~1.5.1"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0"
+  },
+  "engines": {
+    "node": ">=0.8.0",
+    "npm": ">=1.2.10"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ]
+}
