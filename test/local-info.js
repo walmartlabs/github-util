@@ -17,32 +17,32 @@ describe('repo-state', function() {
 
   describe('#githubName', function() {
     it('should lookup local repo', function(done) {
-      localInfo.githubName(function(err, origin) {
+      localInfo.githubName(__dirname, function(err, origin) {
         expect(origin).to.equal('walmartlabs/github-util');
         done();
       });
     });
 
     it('should select origin for multiple instances', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(undefined,
           'origin  git@github.com:kpdecker/github-util.git (fetch)\n'
           + 'origin  git@github.com:kpdecker/github-util.git (push)\n'
           + 'upstream  git@github.com:walmartlabs/github-util.git (fetch)\n'
           + 'upstream  git@github.com:walmartlabs/github-util.git (push)\n');
       });
-      localInfo.githubName(function(err, origin) {
+      localInfo.githubName(__dirname, function(err, origin) {
         expect(origin).to.equal('kpdecker/github-util');
       });
     });
 
     it('should handle errors', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(new Error('It failed'));
       });
 
       var spy = this.spy();
-      localInfo.githubName(spy);
+      localInfo.githubName(__dirname, spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
@@ -50,19 +50,19 @@ describe('repo-state', function() {
 
   describe('#firstCommit', function() {
     it('should lookup local repo', function(done) {
-      localInfo.firstCommit(function(err, first) {
+      localInfo.firstCommit(__dirname, function(err, first) {
         expect(first).to.equal('71f5fa4');
         done();
       });
     });
 
     it('should handle errors', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(new Error('It failed'));
       });
 
       var spy = this.spy();
-      localInfo.firstCommit(spy);
+      localInfo.firstCommit(__dirname, spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
@@ -70,19 +70,19 @@ describe('repo-state', function() {
 
   describe('#commitTime', function() {
     it('should lookup local repo', function(done) {
-      localInfo.commitTime('71f5fa4', function(err, time) {
+      localInfo.commitTime(__dirname, '71f5fa4', function(err, time) {
         expect(time).to.equal('2013-12-27T05:38:34Z');
         done();
       });
     });
 
     it('should handle errors', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(new Error('It failed'));
       });
 
       var spy = this.spy();
-      localInfo.commitTime('asdf', spy);
+      localInfo.commitTime(__dirname, 'asdf', spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
@@ -90,30 +90,30 @@ describe('repo-state', function() {
 
   describe('#ensureClean', function() {
     it('should lookup local repo', function(done) {
-      localInfo.ensureClean(function(err, clean) {
+      localInfo.ensureClean(__dirname, function(err, clean) {
         expect(clean).to.be.true;
         done();
       });
     });
 
     it('should handle dirty', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(undefined, ' ');
       });
 
       var spy = this.spy();
-      localInfo.ensureClean(spy);
+      localInfo.ensureClean(__dirname, spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(undefined, false)).to.be.true;
     });
 
     it('should handle errors', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(new Error('It failed'));
       });
 
       var spy = this.spy();
-      localInfo.ensureClean(spy);
+      localInfo.ensureClean(__dirname, spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
@@ -121,45 +121,45 @@ describe('repo-state', function() {
 
   describe('#ensureFetched', function() {
     it('should handle fetched', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(undefined, '');
       });
 
       var spy = this.spy();
-      localInfo.ensureFetched(spy);
+      localInfo.ensureFetched(__dirname, spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(undefined, true)).to.be.true;
     });
 
     it('should handle behind', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(undefined, '[behind 5]');
       });
 
       var spy = this.spy();
-      localInfo.ensureFetched(spy);
+      localInfo.ensureFetched(__dirname, spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(undefined, false, {behind: '5'})).to.be.true;
     });
 
     it('should handle fetch errors', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(new Error('It failed'));
       });
 
       var spy = this.spy();
-      localInfo.ensureFetched(spy);
+      localInfo.ensureFetched(__dirname, spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
 
     it('should handle branch errors', function() {
-      this.stub(childProcess, 'exec', function(exec, callback) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(/branch/.test(exec) && new Error('It failed'));
       });
 
       var spy = this.spy();
-      localInfo.ensureFetched(spy);
+      localInfo.ensureFetched(__dirname, spy);
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
