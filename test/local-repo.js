@@ -118,4 +118,50 @@ describe('repo-state', function() {
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
   });
+
+  describe('#ensureFetched', function() {
+    it('should handle fetched', function() {
+      this.stub(childProcess, 'exec', function(exec, callback) {
+        callback(undefined, '');
+      });
+
+      var spy = this.spy();
+      repoState.ensureFetched(spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(undefined, true)).to.be.true;
+    });
+
+    it('should handle behind', function() {
+      this.stub(childProcess, 'exec', function(exec, callback) {
+        callback(undefined, '[behind 5]');
+      });
+
+      var spy = this.spy();
+      repoState.ensureFetched(spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(undefined, false, {behind: '5'})).to.be.true;
+    });
+
+    it('should handle fetch errors', function() {
+      this.stub(childProcess, 'exec', function(exec, callback) {
+        callback(new Error('It failed'));
+      });
+
+      var spy = this.spy();
+      repoState.ensureFetched(spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+    });
+
+    it('should handle branch errors', function() {
+      this.stub(childProcess, 'exec', function(exec, callback) {
+        callback(/branch/.test(exec) && new Error('It failed'));
+      });
+
+      var spy = this.spy();
+      repoState.ensureFetched(spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+    });
+  });
 });
