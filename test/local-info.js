@@ -2,6 +2,7 @@ var chai = require('chai'),
       expect = chai.expect,
     childProcess = require('child_process'),
     localInfo = require('../lib/local-info'),
+    path = require('path'),
     sinon = require('sinon');
 
 describe('repo-state', function() {
@@ -160,6 +161,39 @@ describe('repo-state', function() {
 
       var spy = this.spy();
       localInfo.ensureFetched(__dirname, spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+    });
+  });
+
+  describe('#isSubmodule', function() {
+    it('should return false for local dir', function(done) {
+      localInfo.isSubmodule(path.resolve(__dirname + '/..'), function(err, isSubmodule) {
+        expect(isSubmodule).to.be.false;
+        done();
+      });
+    });
+
+    it('should return true', function() {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        callback(undefined, 'true');
+      });
+
+      var spy = this.spy();
+      localInfo.isSubmodule('/foo/bar', spy);
+
+      expect(childProcess.exec.calledWith(sinon.match(/git rev-parse/), {cwd: '/foo'})).to.be.true;
+      expect(spy.calledWith(undefined, true)).to.be.true;
+    });
+
+    it('should handle errors', function() {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        callback(new Error('It failed'));
+      });
+
+      var spy = this.spy();
+      localInfo.isSubmodule('/foo/bar', spy);
+
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
