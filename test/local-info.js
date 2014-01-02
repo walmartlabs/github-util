@@ -166,6 +166,46 @@ describe('repo-state', function() {
     });
   });
 
+  describe('#unmergedBranches', function() {
+    it('should return empty for local dir', function(done) {
+      localInfo.unmergedBranches(__dirname, function(err, unmerged) {
+        console.log(unmerged);
+        expect(unmerged).to.eql([]);
+        done();
+      });
+    });
+    it('should return branch list', function() {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        callback(undefined, '  foo\n  bar\n');
+      });
+
+      var spy = this.spy();
+      localInfo.unmergedBranches(__dirname, spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(undefined, ['foo', 'bar'])).to.be.true;
+    });
+    it('should handle malformed object error', function() {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        callback(/branch/.test(exec) && new Error('It failed'));
+      });
+
+      var spy = this.spy();
+      localInfo.unmergedBranches(__dirname, spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+    });
+    it('should handle other errors', function() {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        callback(new Error('malformed object name HEAD'));
+      });
+
+      var spy = this.spy();
+      localInfo.unmergedBranches(__dirname, spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(undefined, [])).to.be.true;
+    });
+  });
+
   describe('#isSubmodule', function() {
     it('should return false for local dir', function(done) {
       localInfo.isSubmodule(path.resolve(__dirname + '/..'), function(err, isSubmodule) {
