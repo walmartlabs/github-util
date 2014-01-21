@@ -166,10 +166,42 @@ describe('repo-state', function() {
     });
   });
 
+  describe('#status', function() {
+    it('should not error for local dir', function(done) {
+      localInfo.status(__dirname, function(err, status) {
+        expect(err).to.not.exist;
+        expect(status).to.exist;
+        done();
+      });
+    });
+
+    it('should return counts', function(done) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        callback(undefined, '?? foo\n M bar\nA? bar\nDM bar\n M bar\n C bar\n U bar\n');
+      });
+
+      var spy = this.spy();
+      localInfo.status(__dirname, function(err, status) {
+        expect(err).to.not.exist;
+        expect(status).to.eql({added: 1, modified: 4, deleted: 1, untracked: 1});
+        done();
+      });
+    });
+    it('should handle errors', function() {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        callback(new Error('It failed'));
+      });
+
+      var spy = this.spy();
+      localInfo.status('dir!', spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(new Error('git.status dir!: It failed'))).to.be.true;
+    });
+  });
+
   describe('#unmergedBranches', function() {
     it('should return empty for local dir', function(done) {
       localInfo.unmergedBranches(__dirname, function(err, unmerged) {
-        console.log(unmerged);
         expect(unmerged).to.eql([]);
         done();
       });
@@ -184,7 +216,7 @@ describe('repo-state', function() {
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(undefined, ['foo', 'bar'])).to.be.true;
     });
-    it('should handle malformed object error', function() {
+    it('should handle other errors', function() {
       this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(/branch/.test(exec) && new Error('It failed'));
       });
@@ -194,7 +226,7 @@ describe('repo-state', function() {
       expect(spy.callCount).to.equal(1);
       expect(spy.calledWith(new Error('It failed'))).to.be.true;
     });
-    it('should handle other errors', function() {
+    it('should handle malformed object error', function() {
       this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(new Error('malformed object name HEAD'));
       });
