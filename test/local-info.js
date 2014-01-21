@@ -132,37 +132,60 @@ describe('repo-state', function() {
       expect(spy.calledWith(undefined, true)).to.be.true;
     });
 
-    it('should handle behind', function() {
+    it('should handle behind', function(done) {
       this.stub(childProcess, 'exec', function(exec, options, callback) {
         callback(undefined, '[behind 5]');
       });
 
-      var spy = this.spy();
-      localInfo.ensureFetched(__dirname, spy);
-      expect(spy.callCount).to.equal(1);
-      expect(spy.calledWith(undefined, false, {behind: '5'})).to.be.true;
+      localInfo.ensureFetched(__dirname, function(err, fetched, status) {
+        expect(err).to.not.exist;
+        expect(fetched).to.be.false;
+        expect(status).to.eql({behind: '5'});
+        done();
+      });
     });
 
-    it('should handle fetch errors', function() {
+    it('should handle fetch errors', function(done) {
       this.stub(childProcess, 'exec', function(exec, options, callback) {
-        callback(new Error('It failed'));
+        process.nextTick(function() {
+          callback(new Error('It failed'));
+        });
+        return {};
       });
 
-      var spy = this.spy();
-      localInfo.ensureFetched(__dirname, spy);
-      expect(spy.callCount).to.equal(1);
-      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+      localInfo.ensureFetched('dir!', function(err, fetched, status) {
+        expect(err).to.match(/git.fetch dir!: It failed/);
+        done();
+      });
     });
 
-    it('should handle branch errors', function() {
+    it('should handle branch errors', function(done) {
       this.stub(childProcess, 'exec', function(exec, options, callback) {
-        callback(/branch/.test(exec) && new Error('It failed'));
+        process.nextTick(function() {
+          callback(/branch/.test(exec) && new Error('It failed'));
+        });
+        return {};
       });
 
-      var spy = this.spy();
-      localInfo.ensureFetched(__dirname, spy);
-      expect(spy.callCount).to.equal(1);
-      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+      localInfo.ensureFetched('dir!', function(err, fetched, status) {
+        expect(err).to.match(/git.fetch dir!: It failed/);
+        done();
+      });
+    });
+
+    it('should handle timeouts', function(done) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        process.nextTick(function() {
+          callback(new Error('It failed'));
+        });
+        return {killed: true};
+      });
+
+      localInfo.ensureFetched('dir!', function(err, fetched, status) {
+        expect(err).to.match(/git.fetch dir!: It failed/);
+        expect(err.killed).to.be.true;
+        done();
+      });
     });
   });
 
