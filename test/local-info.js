@@ -261,6 +261,39 @@ describe('repo-state', function() {
     });
   });
 
+  describe('#stashes', function() {
+    it('should not error for local dir', function(done) {
+      localInfo.stashes(__dirname, function(err, stashes) {
+        expect(err).to.not.exist;
+        expect(stashes).to.be.a('number');
+        done();
+      });
+    });
+
+    it('should return counts', function(done) {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        callback(undefined, 'foo\n bar\n');
+      });
+
+      var spy = this.spy();
+      localInfo.stashes(__dirname, function(err, stashes) {
+        expect(err).to.not.exist;
+        expect(stashes).to.eql(2);
+        done();
+      });
+    });
+    it('should handle errors', function() {
+      this.stub(childProcess, 'exec', function(exec, options, callback) {
+        callback(new Error('It failed'));
+      });
+
+      var spy = this.spy();
+      localInfo.stashes('dir!', spy);
+      expect(spy.callCount).to.equal(1);
+      expect(spy.calledWith(new Error('git.stashes dir!: It failed'))).to.be.true;
+    });
+  });
+
   describe('#isSubmodule', function() {
     it('should return false for local dir', function(done) {
       localInfo.isSubmodule(path.resolve(__dirname + '/..'), function(err, isSubmodule) {
