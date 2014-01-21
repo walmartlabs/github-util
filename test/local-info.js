@@ -235,7 +235,7 @@ describe('repo-state', function() {
       localInfo.isSubmodule('/foo/bar', spy);
 
       expect(spy.callCount).to.equal(1);
-      expect(spy.calledWith(new Error('It failed'))).to.be.true;
+      expect(spy.calledWith(undefined, false)).to.be.true;
     });
   });
 });
