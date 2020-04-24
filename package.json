@@ -28,7 +28,7 @@
     "github-api": "git://github.com/kpdecker/github.git",
     "request": "~2.27.0",
     "semver": "~2.1.0",
-    "temp": "~0.6.0",
+    "temp": "~0.9.1",
     "underscore": "~1.5.1"
   },
   "devDependencies": {
